@@ -1,5 +1,8 @@
 worker/.env
 __pycache__/
 *.py[cod]
+.python-version
 .venv/
 .env
+.cursor
+.cursorrules

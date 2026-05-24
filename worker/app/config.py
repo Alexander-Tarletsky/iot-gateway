@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
-from url_join import url_join
+from urllib.parse import urljoin
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -30,6 +31,8 @@ class Config:
     mqtt_client_id: str
     api_base_url: str
     api_endpoint: str
+    climate_api_key: str
+    device_id: str
     http_timeout_sec: float
     http_retry_count: int
     http_retry_delay_sec: float
@@ -37,8 +40,9 @@ class Config:
 
     @property
     def api_url(self) -> str:
-        return url_join(self.api_base_url, self.api_endpoint)
-   
+        base = self.api_base_url.rstrip("/") + "/"
+        path = self.api_endpoint.lstrip("/")
+        return urljoin(base, path)
 
 
 def load_config() -> Config:
@@ -49,8 +53,10 @@ def load_config() -> Config:
         mqtt_username=os.getenv("MQTT_USERNAME", ""),
         mqtt_password=os.getenv("MQTT_PASSWORD", ""),
         mqtt_client_id=os.getenv("MQTT_CLIENT_ID", "iot-gateway-worker"),
-        api_base_url=os.getenv("API_BASE_URL", "http://127.0.0.1:8005"),
-        api_endpoint=os.getenv("API_ENDPOINT", "/test"),
+        api_base_url=os.getenv("API_BASE_URL", "http://127.0.0.1:8069"),
+        api_endpoint=os.getenv("API_ENDPOINT", "/climate/api/v1/readings"),
+        climate_api_key=os.getenv("CLIMATE_API_KEY", ""),
+        device_id=os.getenv("DEVICE_ID", "esp32"),
         http_timeout_sec=_get_float("HTTP_TIMEOUT_SEC", 10.0),
         http_retry_count=_get_int("HTTP_RETRY_COUNT", 2),
         http_retry_delay_sec=_get_float("HTTP_RETRY_DELAY_SEC", 1.0),

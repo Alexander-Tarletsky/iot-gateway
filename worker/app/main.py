@@ -32,6 +32,13 @@ def main() -> int:
     _configure_logging(config.log_level)
     logger = logging.getLogger(__name__)
 
+    if not config.climate_api_key:
+        logger.error(
+            "CLIMATE_API_KEY is not set. Set it in .env to match "
+            "Climate Monitor → Settings in Odoo."
+        )
+        return 1
+
     message_queue: Queue[MqttMessage] = Queue()
     mqtt_subscriber = MqttSubscriber(config, message_queue)
     api_client = ApiClient(config)
